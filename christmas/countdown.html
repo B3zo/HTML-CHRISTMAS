@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Christmas Countdown & Tree Decoration</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      font-family: 'Arial', sans-serif;
+      background-color: red;
+      color: white;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #menu {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: white;
+      color: black;
+      padding: 10px;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    #menuItems {
+      display: none;
+      position: absolute;
+      top: 50px;
+      left: 20px;
+      background-color: white;
+      padding: 10px;
+      z-index: 10;
+    }
+
+    #menuItems button {
+      display: block;
+      margin: 5px 0;
+      cursor: pointer;
+    }
+
+    #countdown {
+      font-size: 3rem;
+      text-align: center;
+      position: absolute;
+      z-index: 1;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #countdown.tree-mode {
+      top: 20px;
+      right: 20px;
+      left: unset;
+      transform: none;
+      font-size: 1.5rem;
+    }
+
+    .santa-hat {
+      position: absolute;
+      left: -100px;
+      top: -80px;
+      font-size: 4rem;
+      transform: rotate(-30deg);
+      z-index: 2;
+    }
+
+    .snowflake {
+      position: absolute;
+      top: -10px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+      }
+    }
+
+    #treePage {
+      display: none;
+      position: relative;
+      height: 100vh;
+    }
+
+    #tree {
+      position: absolute;
+      width: 200px;
+      height: 300px;
+      background-color: green;
+      left: 50%;
+      top: 30%;
+      transform: translateX(-50%);
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      box-shadow: 0 0 10px #000;
+    }
+
+    #tree-trunk {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background-color: brown;
+      bottom: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: -1;
+    }
+
+    #decorations {
+      position: absolute;
+      bottom: 50px;
+      left: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .decoration {
+      width: 25px; /* Smaller size */
+      height: 25px; /* Smaller size */
+      border: 2px solid black;
+      border-radius: 50%;
+      cursor: grab;
+    }
+
+    .decoration.gold {
+      background-color: gold;
+    }
+
+    .decoration.red {
+      background-color: red;
+    }
+
+    .decoration.silver {
+      background-color: silver;
+    }
+
+    .decoration.green {
+      background-color: darkgreen;
+    }
+
+    .decoration.blue {
+      background-color: blue;
+    }
+
+    .decoration.orange {
+      background-color: orange;
+    }
+
+    .decoration.pink {
+      background-color: pink;
+    }
+
+    .decoration.white {
+      background-color: white;
+    }
+
+    .decoration.purple {
+      background-color: purple;
+    }
+
+    .decoration.brown {
+      background-color: brown;
+    }
+
+    .decoration.cyan {
+      background-color: cyan;
+    }
+
+    .decoration.magenta {
+      background-color: magenta;
+    }
+
+    .decoration.lightgreen {
+      background-color: lightgreen;
+    }
+
+    .decoration.lime {
+      background-color: lime;
+    }
+
+    .decoration.navy {
+      background-color: navy;
+    }
+
+    .decoration.teal {
+      background-color: teal;
+    }
+
+    #star {
+      width: 40px; /* Size of the star */
+      height: 40px; /* Size of the star */
+      background-color: yellow;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      cursor: grab;
+      position: absolute;
+      top: -40px; /* Position it above the tree */
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .big-snowball {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background-color: green;
+      border-radius: 50%;
+      bottom: 100px; /* Positioned above the bottom */
+      left: calc(50% - 40px); /* Center horizontally */
+      cursor: pointer;
+      z-index: 5;
+      display: none; /* Hidden by default */
+    }
+
+    #tree .decoration {
+      position: absolute;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Menu -->
+  <div id="menu">☰ Menu</div>
+  <div id="menuItems">
+    <button id="homeButton">Home</button>
+    <button id="treeButton">Decorate Tree</button>
+  </div>
+
+  <!-- Santa Hat and Countdown -->
+  <div class="santa-hat">🎅</div>
+  <div id="countdown">
+    <p>Christmas Countdown</p>
+    <div id="time">Loading...</div>
+  </div>
+
+  <!-- Tree Decoration Page -->
+  <div id="treePage">
+    <div id="tree">
+      <div id="star" draggable="true"></div>
+      <div id="tree-trunk"></div>
+    </div>
+    <div id="decorations">
+      <div class="decoration gold" draggable="true"></div>
+      <div class="decoration red" draggable="true"></div>
+      <div class="decoration silver" draggable="true"></div>
+      <div class="decoration green" draggable="true"></div>
+      <div class="decoration blue" draggable="true"></div>
+      <div class="decoration orange" draggable="true"></div>
+      <div class="decoration pink" draggable="true"></div>
+      <div class="decoration white" draggable="true"></div>
+      <div class="decoration purple" draggable="true"></div>
+      <div class="decoration brown" draggable="true"></div>
+      <div class="decoration cyan" draggable="true"></div>
+      <div class="decoration magenta" draggable="true"></div>
+      <div class="decoration lightgreen" draggable="true"></div>
+      <div class="decoration lime" draggable="true"></div>
+      <div class="decoration.navy" draggable="true"></div>
+      <div class="decoration.teal" draggable="true"></div>
+    </div>
+    <div class="big-snowball" id="bigSnowball"></div>
+  </div>
+
+  <script>
+    let snowflakeInterval = 100;
+    let snowflakeTimer;
+
+    // Countdown calculation
+    function calculateCountdown() {
+      const now = new Date();
+      const targetDate = new Date(now.getFullYear(), 11, 25);
+      if (now > targetDate) {
+        targetDate.setFullYear(targetDate.getFullYear() + 1);
+      }
+
+      const diff = targetDate - now;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById("time").innerHTML =
+        `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds`;
+    }
+    setInterval(calculateCountdown, 1000);
+
+    // Snowfall effect
+    function createSnowflake() {
+      const snowflake = document.createElement('div');
+      const size = Math.random() * 10 + 5;
+      const left = Math.random() * window.innerWidth;
+
+      snowflake.classList.add('snowflake');
+      snowflake.style.width = `${size}px`;
+      snowflake.style.height = `${size}px`;
+      snowflake.style.left = `${left}px`;
+      snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`;
+
+      document.body.appendChild(snowflake);
+      setTimeout(() => snowflake.remove(), 10000);
+    }
+
+    function adjustSnowfall() {
+      clearInterval(snowflakeTimer);
+      snowflakeTimer = setInterval(createSnowflake, snowflakeInterval);
+    }
+
+    adjustSnowfall();
+
+    // Menu functionality
+    const menu = document.getElementById("menu");
+    const menuItems = document.getElementById("menuItems");
+    const homeButton = document.getElementById("homeButton");
+    const treeButton = document.getElementById("treeButton");
+    const countdown = document.getElementById("countdown");
+    const treePage = document.getElementById("treePage");
+    const bigSnowball = document.getElementById("bigSnowball");
+
+    menu.addEventListener("click", () => {
+      menuItems.style.display = menuItems.style.display === "none" ? "block" : "none";
+    });
+
+    homeButton.addEventListener("click", () => {
+      treePage.style.display = "none";
+      countdown.classList.remove("tree-mode");
+      countdown.style.fontSize = "3rem"; // Set back to original size
+      bigSnowball.style.display = "none"; // Hide snowball
+    });
+
+    treeButton.addEventListener("click", () => {
+      treePage.style.display = "block";
+      countdown.classList.add("tree-mode");
+      countdown.style.fontSize = "1.5rem"; // Shrink countdown
+    });
+
+    // Drag-and-drop functionality for tree decorations
+    const decorations = document.querySelectorAll('.decoration');
+    const star = document.getElementById('star');
+    const tree = document.getElementById('tree');
+
+    decorations.forEach((decoration) => {
+      decoration.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', null);
+        setTimeout(() => decoration.style.visibility = 'hidden', 0);
+      });
+
+      decoration.addEventListener('dragend', () => {
+        decoration.style.visibility = 'visible';
+      });
+    });
+
+    star.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', null);
+      setTimeout(() => star.style.visibility = 'hidden', 0);
+    });
+
+    star.addEventListener('dragend', () => {
+      star.style.visibility = 'visible';
+    });
+
+    tree.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+
+    tree.addEventListener('drop', (e) => {
+      const decoration = document.querySelector('.decoration[style*="visibility: hidden"]') || star;
+      const treeRect = tree.getBoundingClientRect();
+      const x = e.clientX - treeRect.left - 15;  // Offset for decoration width
+      const y = e.clientY - treeRect.top - 15;   // Offset for decoration height
+      decoration.style.position = 'absolute';
+      decoration.style.left = `${x}px`;
+      decoration.style.top = `${y}px`;
+      decoration.style.visibility = 'visible';
+      tree.appendChild(decoration);
+    });
+
+    // Big snowball feature every hour
+    function showBigSnowball() {
+      bigSnowball.style.display = 'block';
+    }
+
+    function hideBigSnowball() {
+      bigSnowball.style.display = 'none';
+    }
+
+    // Check if a snowball should be shown
+    function checkSnowball() {
+      const now = new Date();
+      const minutes = now.getMinutes();
+      if (minutes === 0) {
+        showBigSnowball();
+        setTimeout(hideBigSnowball, 60000); // Hide after 60 seconds
+      }
+    }
+
+    // Click event for the big snowball
+    bigSnowball.addEventListener('click', () => {
+      const rainbowOrnament = document.createElement('div');
+      rainbowOrnament.className = 'decoration';
+      rainbowOrnament.style.width = '25px'; // Same size as other decorations
+      rainbowOrnament.style.height = '25px'; // Same size as other decorations
+      rainbowOrnament.style.background = 'linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)';
+      rainbowOrnament.draggable = true;
+
+      rainbowOrnament.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', null);
+        setTimeout(() => rainbowOrnament.style.visibility = 'hidden', 0);
+      });
+
+      rainbowOrnament.addEventListener('dragend', () => {
+        rainbowOrnament.style.visibility = 'visible';
+      });
+
+      document.getElementById("decorations").appendChild(rainbowOrnament);
+    });
+
+    // Set an interval to check for snowball every minute
+    setInterval(checkSnowball, 60000);
+    checkSnowball(); // Check immediately on load
+
+  </script>
+</body>
+</html>
